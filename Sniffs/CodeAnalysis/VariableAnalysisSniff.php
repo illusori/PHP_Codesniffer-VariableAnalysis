@@ -351,6 +351,12 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
     public $allowUnusedFunctionParameters = false;
 
     /**
+     *  Allow globals to be modified without provoking unused-var warning.
+     *  Set generic.codeanalysis.variableanalysis.allowGlobalsModification to a true value.
+     */
+    public $allowGlobalsModification = false;
+
+    /**
      *  A list of names of placeholder variables that you want to ignore from
      *  unused variable warnings, ie things like $junk.
      */
@@ -1467,6 +1473,11 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                 // use the variable to return data to the caller, so any
                 // assignment also counts as "variable use" for the purposes
                 // of "unused variable" warnings.
+                continue;
+            }
+            if ($this->allowGlobalsModification && $varInfo->scopeType == 'global' && isset($varInfo->firstInitialized)) {
+		// A common pattern (anti-pattern) is to modify global variables
+		// not returning or using their value, just modifying it.
                 continue;
             }
             if (isset($varInfo->firstDeclared)) {

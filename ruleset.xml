@@ -49,6 +49,11 @@
    -->
    <property name="allowUnusedFunctionParameters" value="1"/>
    <!--
+      Include the following property if you want to prevent warnings of undeclared global variables,
+      where you have the global declared any only modify the value but never read the variable.
+   -->
+   <property name="allowGlobalsModification" value="0"/>
+   <!--
       Include the following property if you want to have a whitelist of variable names
       that are commonly used for placeholder "junk" values that ignored and that you
       don't want to provoke an unused variable warning for.
