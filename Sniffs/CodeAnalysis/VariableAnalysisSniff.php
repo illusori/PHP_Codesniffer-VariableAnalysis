@@ -356,6 +356,10 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
      */
     public $validUnusedVariableNames = null;
 
+    /**
+     *  A list of names of variables that you want to ignore from
+     *  undefined variable warnings
+     */
     public $validUndefinedVariableNames = null;
 
     /**
@@ -542,7 +546,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
 
         if ($this->isVariableUndefined($varName, $stackPtr, $currScope) === true) {
             // We haven't been defined by this point.
-            if ($this->validUndefinedVariableNames && !in_array($varName, $this->validUndefinedVariableNames)) {
+            if (!$this->validUndefinedVariableNames || !in_array($varName, $this->validUndefinedVariableNames)) {
                 $phpcsFile->addWarning("Variable %s is undefined.", $stackPtr,
                     'UndefinedVariable',
                     array("\${$varName}"));
