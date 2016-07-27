@@ -577,7 +577,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                 if (($scopeCode === T_FUNCTION) || ($scopeCode === T_CLOSURE)) {
                     return $scopePtr;
                 }
-                if (($scopeCode === T_CLASS) || ($scopeCode === T_INTERFACE)) {
+                if (($scopeCode === T_CLASS) || ($scopeCode === T_INTERFACE) || ($scopeCode === T_TRAIT)) {
                     $in_class = true;
                 }
             }
