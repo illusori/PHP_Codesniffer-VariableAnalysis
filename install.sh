@@ -37,9 +37,14 @@ INSTALL_FROM_DIR=$(dirname $(php -r "echo realpath('$0');"))
 SNIFFS_SUBDIR="Sniffs/CodeAnalysis"
 TESTS_SUBDIR="Tests/CodeAnalysis"
 
-#echo "Setting up links using PHP_Codesniffer dir \"${PHP_CODESNIFFER_DIR}\" and plugins from \"${INSTALL_FROM_DIR}\"."
-
 ERRORS=0
+
+if [ ! -d "${PHP_CODESNIFFER_DIR}/Standards/Generic/${SNIFFS_SUBDIR}" ]; then
+	mkdir -p "${PHP_CODESNIFFER_DIR}/Standards/Generic/${SNIFFS_SUBDIR}"
+fi
+if [ ! -d "${PHP_CODESNIFFER_DIR}/Standards/Generic/${TESTS_SUBDIR}" ]; then
+	mkdir -p "${PHP_CODESNIFFER_DIR}/Standards/Generic/${TESTS_SUBDIR}"
+fi
 
 #  TODO: support copy install
 if [ -d "${PHP_CODESNIFFER_DIR}/Standards/Generic/${SNIFFS_SUBDIR}" ]; then
