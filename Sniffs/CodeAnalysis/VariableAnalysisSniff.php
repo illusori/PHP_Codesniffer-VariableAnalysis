@@ -330,7 +330,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
         'yaz_hits' => array(2),
         'yaz_scan_result' => array(2),
         'yaz_wait' => array(1),
-        );
+    );
 
     /**
      *  Allows an install to extend the list of known pass-by-reference functions
@@ -357,6 +357,12 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
     public $validUnusedVariableNames = null;
 
     /**
+     *  A list of names of variables that you want to ignore from
+     *  undefined variable warnings
+     */
+    public $validUndefinedVariableNames = null;
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array
@@ -373,6 +379,12 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
             $this->validUnusedVariableNames =
                 preg_split('/\s+/', trim($this->validUnusedVariableNames));
         }
+
+        if (!empty($this->validUndefinedVariableNames)) {
+            $this->validUndefinedVariableNames =
+                preg_split('/\s+/', trim($this->validUndefinedVariableNames));
+        }
+
         return array(
             T_VARIABLE,
             T_DOUBLE_QUOTED_STRING,
@@ -429,7 +441,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
             $currScope = 'file';
         }
         return ($this->currentFile ? $this->currentFile->getFilename() : 'unknown file') .
-            ':' . $currScope;
+        ':' . $currScope;
     }
 
     //  Warning: this is an autovivifying get
@@ -487,8 +499,8 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                         VariableInfo::$scopeTypeDescriptions[$varInfo->scopeType],
                         "\${$varName}",
                         VariableInfo::$scopeTypeDescriptions[$scopeType],
-                        )
-                    );
+                    )
+                );
             }
         }
         $varInfo->scopeType = $scopeType;
@@ -534,9 +546,11 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
 
         if ($this->isVariableUndefined($varName, $stackPtr, $currScope) === true) {
             // We haven't been defined by this point.
-            $phpcsFile->addWarning("Variable %s is undefined.", $stackPtr,
-                'UndefinedVariable',
-                array("\${$varName}"));
+            if (!$this->validUndefinedVariableNames || !in_array($varName, $this->validUndefinedVariableNames)) {
+                $phpcsFile->addWarning("Variable %s is undefined.", $stackPtr,
+                    'UndefinedVariable',
+                    array("\${$varName}"));
+            }
         }
         return true;
     }
@@ -746,7 +760,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
             $openPtr - 1, null, true, null, true);
         if (($functionPtr !== false) &&
             (($tokens[$functionPtr]['code'] === T_FUNCTION) ||
-             ($tokens[$functionPtr]['code'] === T_CLOSURE))) {
+                ($tokens[$functionPtr]['code'] === T_CLOSURE))) {
             // TODO: typeHint
             $this->markVariableDeclaration($varName, 'param', null, $stackPtr, $functionPtr);
             // Are we pass-by-reference?
@@ -871,7 +885,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
             '_ENV',
             'argv',
             'argc',
-            ))) {
+        ))) {
             return true;
         }
 
@@ -1047,7 +1061,7 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                 T_DOUBLE_COLON,
                 T_START_HEREDOC, T_HEREDOC, T_END_HEREDOC,
                 T_START_NOWDOC, T_NOWDOC, T_END_NOWDOC,
-                ),
+            ),
             $stackPtr - 1, null, true, null, true);
         if (($staticPtr === false) || ($tokens[$staticPtr]['code'] !== T_STATIC)) {
             //if ($varName == 'static4') {
@@ -1477,8 +1491,8 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                     array(
                         VariableInfo::$scopeTypeDescriptions[$varInfo->scopeType],
                         "\${$varInfo->name}",
-                        )
-                    );
+                    )
+                );
             }
             if (isset($varInfo->firstInitialized)) {
                 $phpcsFile->addWarning(
@@ -1488,8 +1502,8 @@ class Generic_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_CodeSniff
                     array(
                         VariableInfo::$scopeTypeDescriptions[$varInfo->scopeType],
                         "\${$varInfo->name}",
-                        )
-                    );
+                    )
+                );
             }
         }
     }

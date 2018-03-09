@@ -58,6 +58,16 @@
     junk
     dummy
     "/>
+  <!--
+     Include the following property if you want to have a whitelist of variable names
+     that are defined in all php files and that you don't want to provoke an undefined
+     variable warning for.
+     Format is "variableName" without a leading $ with whitespace delimiting names.
+  -->
+   <property name="validUndefinedVariableNames" value="
+    junk
+    dummy
+    "/>
   </properties>
  </rule>
 
